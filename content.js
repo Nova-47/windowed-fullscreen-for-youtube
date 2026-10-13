@@ -7,6 +7,7 @@
 
   let enabled      = false;
   let transitioning = false;
+  let animGen      = 0;     // bumped by cancelAnim() to void pending animation timers
   let styleEl      = null;
   let closeBtn     = null;
 
@@ -176,8 +177,11 @@
     return btn;
   }
 
-  // ── Enable / Disable (instant — used on navigation / programmatic calls) ────
-  function enableNow() {
+  // ── Enable / Disable (instant) ─────────────────────────────────────────────
+  // `persist` writes the user's preference ("keep windowed on the next video").
+  // Only user toggles persist; navigation, F and native fullscreen just change
+  // what this tab shows, so the preference survives them.
+  function enableNow(persist = true) {
     if (enabled) return;
     enabled = true;
 
@@ -189,15 +193,15 @@
     document.documentElement.classList.add(HTML_CLASS);
     window.dispatchEvent(new Event('resize'));
 
-    closeBtn = createCloseButton();
-    document.body.appendChild(closeBtn);
-    requestAnimationFrame(() => requestAnimationFrame(() => { closeBtn.style.opacity = '1'; }));
+    const btn = closeBtn = createCloseButton();
+    document.body.appendChild(btn);
+    requestAnimationFrame(() => requestAnimationFrame(() => { btn.style.opacity = '1'; }));
 
     syncPlayerButton();
-    safeCall(() => chrome.storage.local.set({ [STORAGE_KEY]: true }));
+    if (persist) safeCall(() => chrome.storage.local.set({ [STORAGE_KEY]: true }));
   }
 
-  function disableNow() {
+  function disableNow(persist = true) {
     if (!enabled) return;
     enabled = false;
     transitioning = false; // reset in case we're aborting mid-animation
@@ -208,7 +212,22 @@
 
     window.dispatchEvent(new Event('resize'));
     syncPlayerButton();
-    safeCall(() => chrome.storage.local.set({ [STORAGE_KEY]: false }));
+    if (persist) safeCall(() => chrome.storage.local.set({ [STORAGE_KEY]: false }));
+  }
+
+  // Abort any enter/exit animation in flight: its timers see a stale `animGen`
+  // and return, so a late enableNow() can't re-enable after F or navigation.
+  function cancelAnim() {
+    animGen++;
+    transitioning = false;
+    document.getElementById('yt-max-anim')?.remove();
+    document.getElementById('yt-max-exit-overlay')?.remove();
+  }
+
+  // Leave windowed FS immediately without touching the stored preference.
+  function exitForNow() {
+    cancelAnim();
+    disableNow(false);
   }
 
   // ── Animated Enable ─────────────────────────────────────────────────────────
@@ -221,6 +240,7 @@
     // forever (W/Alt+W then silently do nothing) — skip the animation there.
     if (document.hidden) { enableNow(); return; }
     transitioning = true;
+    const gen = animGen;
 
     const player = document.querySelector('#movie_player');
     const rect   = player?.getBoundingClientRect();
@@ -237,10 +257,12 @@
     // 2. One double-rAF later: update CSS to trigger the transition
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
+        if (gen !== animGen) return;
         animEl.textContent = buildAnimCSS(null, true);
 
         // 3. After transition completes: swap to stable CSS (display:none, no transition)
         setTimeout(() => {
+          if (gen !== animGen) return;
           // Apply stable CSS first so the player never loses its position
           enableNow();
           animEl.remove();
@@ -257,6 +279,7 @@
     if (!enabled || transitioning) return;
     if (document.hidden) { disableNow(); return; }
     transitioning = true;
+    const gen = animGen;
 
     const FADE = Math.round(ANIM_MS * 0.5); // 150 ms
 
@@ -276,13 +299,14 @@
 
     // At peak opacity: revert state, then fade the overlay back out
     setTimeout(() => {
+      if (gen !== animGen) return;
       disableNow();
 
       requestAnimationFrame(() => { overlay.style.opacity = '0'; });
 
       setTimeout(() => {
         overlay.remove();
-        transitioning = false;
+        if (gen === animGen) transitioning = false;
       }, FADE + 20);
     }, FADE);
   }
@@ -304,14 +328,16 @@
   }
 
   // ── Events ──────────────────────────────────────────────────────────────────
-  // W key → toggle, F key while windowed FS active → disable (from key_interceptor.js)
+  // W key → toggle, F key while windowed FS active → exit (from key_interceptor.js).
+  // The F exit must be synchronous so YouTube's F handler, which runs right after,
+  // starts native fullscreen from a clean layout.
   window.addEventListener('ytmax:toggle', toggle);
-  window.addEventListener('ytmax:disable', disable);
+  window.addEventListener('ytmax:disable', exitForNow);
 
   // Safety net: if fullscreen is triggered by the player button (not keyboard),
   // disable windowed FS before the fullscreen layer causes a visual conflict.
   document.addEventListener('fullscreenchange', () => {
-    if (document.fullscreenElement && enabled) disableNow();
+    if (document.fullscreenElement && (enabled || transitioning)) exitForNow();
   });
 
   // Alt+W global shortcut (background.js) + explicit enable/disable from popup
@@ -323,13 +349,15 @@
   }));
 
   // Re-inject player button after YouTube SPA navigation
+  // Clean up first on every navigation: leaving a watch page (e.g. Back to the
+  // home feed) must not keep the header hidden and the page unscrollable.
   window.addEventListener('yt-navigate-finish', () => {
+    exitForNow(); // instant, preference kept
     if (!location.pathname.startsWith('/watch')) return;
-    if (enabled) disableNow(); // instant — no animation on page navigation
     tryInjectButton();
-    // Restore persisted state for the new video
+    // Restore the user's preference for the new video
     safeCall(() => chrome.storage.local.get([STORAGE_KEY], (result) => {
-      if (result[STORAGE_KEY]) enableNow();
+      if (result[STORAGE_KEY]) enableNow(false);
     }));
   });
 
@@ -359,7 +387,7 @@
   if (location.pathname.startsWith('/watch')) {
     tryInjectButton();
     safeCall(() => chrome.storage.local.get([STORAGE_KEY], (result) => {
-      if (result[STORAGE_KEY]) enableNow(); // no animation on initial page load
+      if (result[STORAGE_KEY]) enableNow(false); // no animation on initial page load
     }));
   }
 })();

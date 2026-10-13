@@ -93,6 +93,10 @@ windowed-fullscreen-for-youtube/
 
 ### v1.3.0
 - Renamed from "YouTube Max" to "Windowed Fullscreen for YouTube", with a new icon
+- Fix: windowed fullscreen now really carries over to the next video (navigation used to overwrite the saved preference with "off")
+- Fix: going back to the YouTube home page while windowed no longer leaves the header hidden and the page unscrollable
+- Fix: `W` works on AZERTY/Dvorak as well as under a Korean IME (matches the typed letter, falls back to the physical key for non-Latin input)
+- Fix: pressing `F` mid-animation can no longer re-enable windowed mode after native fullscreen starts
 - Removed the `tabs` and `activeTab` permissions: the popup and `Alt+W` now ask the page's content script instead of reading the tab URL, so installing no longer shows a "Read your browsing history" warning
 
 ### v1.2.1
