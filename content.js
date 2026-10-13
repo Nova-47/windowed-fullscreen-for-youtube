@@ -14,21 +14,28 @@
   const ANIM_MS     = 300;
   const ANIM_EASING = 'cubic-bezier(0.4, 0, 0.2, 1)';
 
-  const UI_SELECTORS = [
+  // Page chrome hidden in windowed FS. This is the list that breaks when YouTube
+  // renames its DOM — keep it the single source for both the animation and the
+  // stable CSS below.
+  const UI_SELECTOR_LIST = [
     '#masthead-container', 'ytd-guide-renderer', 'tp-yt-app-drawer',
     'ytd-mini-guide-renderer', '#secondary', '#below', 'ytd-watch-metadata',
     'ytd-merch-shelf-renderer', '#chat', '#chatframe',
     'ytd-engagement-panel-section-list-renderer',
-  ].join(', ');
+  ];
+  const UI_SELECTORS = UI_SELECTOR_LIST.join(', ');
 
-  // CSS injected at animation start: player fixed at its *current* rect, UI ready to fade
-  function buildEnterInitCSS(rect) {
+  // Animation CSS: player fixed at `rect` (or the full viewport when rect is
+  // null), UI faded out when `hideUI` is set. Injecting the start state, forcing
+  // a reflow, then swapping to the end state is what drives the transition.
+  function buildAnimCSS(rect, hideUI) {
     const t = rect ? `${rect.top}px`    : '0';
     const l = rect ? `${rect.left}px`   : '0';
     const w = rect ? `${rect.width}px`  : '100vw';
     const h = rect ? `${rect.height}px` : '100vh';
     return `
       ${UI_SELECTORS} {
+        ${hideUI ? 'opacity: 0 !important; pointer-events: none !important;' : ''}
         transition: opacity ${ANIM_MS}ms ${ANIM_EASING} !important;
       }
       ytd-player, ytd-player #container { overflow: visible !important; }
@@ -47,30 +54,6 @@
     `;
   }
 
-  // CSS injected one rAF later: triggers the transition to fullscreen
-  function buildEnterTargetCSS() {
-    return `
-      ${UI_SELECTORS} {
-        opacity: 0 !important;
-        pointer-events: none !important;
-        transition: opacity ${ANIM_MS}ms ${ANIM_EASING} !important;
-      }
-      ytd-player, ytd-player #container { overflow: visible !important; }
-      #movie_player {
-        position: fixed !important;
-        top: 0 !important; left: 0 !important;
-        width: 100vw !important; height: 100vh !important;
-        max-width: none !important; max-height: none !important;
-        z-index: 9999 !important;
-        transition:
-          top ${ANIM_MS}ms ${ANIM_EASING},
-          left ${ANIM_MS}ms ${ANIM_EASING},
-          width ${ANIM_MS}ms ${ANIM_EASING},
-          height ${ANIM_MS}ms ${ANIM_EASING} !important;
-      }
-    `;
-  }
-
   // ── CSS ─────────────────────────────────────────────────────────────────────
   const FULLSCREEN_CSS = `
     html.${HTML_CLASS},
@@ -78,17 +61,7 @@
       overflow: hidden !important;
     }
 
-    html.${HTML_CLASS} #masthead-container,
-    html.${HTML_CLASS} ytd-guide-renderer,
-    html.${HTML_CLASS} tp-yt-app-drawer,
-    html.${HTML_CLASS} ytd-mini-guide-renderer,
-    html.${HTML_CLASS} #secondary,
-    html.${HTML_CLASS} #below,
-    html.${HTML_CLASS} ytd-watch-metadata,
-    html.${HTML_CLASS} ytd-merch-shelf-renderer,
-    html.${HTML_CLASS} #chat,
-    html.${HTML_CLASS} #chatframe,
-    html.${HTML_CLASS} ytd-engagement-panel-section-list-renderer {
+    ${UI_SELECTOR_LIST.map(sel => `html.${HTML_CLASS} ${sel}`).join(',\n    ')} {
       display: none !important;
     }
 
@@ -255,7 +228,7 @@
     // 1. Inject initial-state CSS: player fixed at current rect, UI at natural opacity
     const animEl = document.createElement('style');
     animEl.id = 'yt-max-anim';
-    animEl.textContent = buildEnterInitCSS(rect);
+    animEl.textContent = buildAnimCSS(rect, false);
     document.head.appendChild(animEl);
 
     // Force reflow so the browser registers the initial state before we change it
@@ -264,7 +237,7 @@
     // 2. One double-rAF later: update CSS to trigger the transition
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        animEl.textContent = buildEnterTargetCSS();
+        animEl.textContent = buildAnimCSS(null, true);
 
         // 3. After transition completes: swap to stable CSS (display:none, no transition)
         setTimeout(() => {
