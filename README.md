@@ -9,7 +9,7 @@ Snap the browser window to one half of your screen with YouTube on the right and
 [한국어](README.kr.md)
 
 ![Manifest V3](https://img.shields.io/badge/Manifest-V3-blue)
-![Version](https://img.shields.io/badge/version-1.3.0-orange)
+![Version](https://img.shields.io/badge/version-1.3.1-orange)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
 ---
@@ -90,6 +90,9 @@ windowed-fullscreen-for-youtube/
 ---
 
 ## Changelog
+
+### v1.3.1
+- Fix: nothing worked on live streams (`youtube.com/live/<id>` URLs); they are now treated like `/watch` pages
 
 ### v1.3.0
 - Renamed from "YouTube Max" to "Windowed Fullscreen for YouTube", with a new icon

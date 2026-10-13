@@ -11,6 +11,9 @@
   let styleEl      = null;
   let closeBtn     = null;
 
+  // Video pages: /watch?v=… and live streams at /live/<id> (same watch page UI).
+  const isWatchPage = () => /^\/(watch|live\/)/.test(location.pathname);
+
   // ── Animation constants ──────────────────────────────────────────────────────
   const ANIM_MS     = 300;
   const ANIM_EASING = 'cubic-bezier(0.4, 0, 0.2, 1)';
@@ -312,7 +315,7 @@
   }
 
   function toggle() {
-    if (!enabled && !location.pathname.startsWith('/watch')) return;
+    if (!enabled && !isWatchPage()) return;
     enabled ? disable() : enable();
   }
 
@@ -342,7 +345,7 @@
 
   // Alt+W global shortcut (background.js) + explicit enable/disable from popup
   safeCall(() => chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
-    if (msg.action === 'status')  sendResponse({ onWatch: location.pathname.startsWith('/watch') });
+    if (msg.action === 'status')  sendResponse({ onWatch: isWatchPage() });
     if (msg.action === 'toggle')  toggle();
     if (msg.action === 'enable')  enable();   // animated
     if (msg.action === 'disable') disable();  // animated
@@ -353,7 +356,7 @@
   // home feed) must not keep the header hidden and the page unscrollable.
   window.addEventListener('yt-navigate-finish', () => {
     exitForNow(); // instant, preference kept
-    if (!location.pathname.startsWith('/watch')) return;
+    if (!isWatchPage()) return;
     tryInjectButton();
     // Restore the user's preference for the new video
     safeCall(() => chrome.storage.local.get([STORAGE_KEY], (result) => {
@@ -372,7 +375,7 @@
     const playerContainer = document.querySelector('ytd-player, #player-container');
     if (!playerContainer) return;
     controlsObserver = new MutationObserver(() => {
-      if (location.pathname.startsWith('/watch') && !document.getElementById(BTN_ID)) {
+      if (isWatchPage() && !document.getElementById(BTN_ID)) {
         if (document.querySelector('.ytp-fullscreen-button')) injectPlayerButton();
       }
     });
@@ -384,7 +387,7 @@
   observeControls();
 
   // ── Init ────────────────────────────────────────────────────────────────────
-  if (location.pathname.startsWith('/watch')) {
+  if (isWatchPage()) {
     tryInjectButton();
     safeCall(() => chrome.storage.local.get([STORAGE_KEY], (result) => {
       if (result[STORAGE_KEY]) enableNow(false); // no animation on initial page load

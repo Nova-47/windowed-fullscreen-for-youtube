@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Windowed Fullscreen for YouTube",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Expand the YouTube player to fill the whole browser window while keeping tabs and the address bar. Press W to toggle.",
   "permissions": ["storage"],
   "content_scripts": [

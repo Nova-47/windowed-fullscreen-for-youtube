@@ -10,7 +10,7 @@ OS 전체화면(F키)과 달리 브라우저 탭과 주소창은 그대로 유�
 [English](README.md)
 
 ![Manifest V3](https://img.shields.io/badge/Manifest-V3-blue)
-![Version](https://img.shields.io/badge/version-1.3.0-orange)
+![Version](https://img.shields.io/badge/version-1.3.1-orange)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
 ---
@@ -92,6 +92,9 @@ windowed-fullscreen-for-youtube/
 ---
 
 ## 변경 이력
+
+### v1.3.1
+- 수정: 라이브 방송 주소(`youtube.com/live/<id>`)에서 버튼·단축키가 전혀 동작하지 않던 문제 해결 — `/watch`와 동일하게 처리
 
 ### v1.3.0
 - 이름 변경: "YouTube Max" → "Windowed Fullscreen for YouTube", 새 아이콘 적용
