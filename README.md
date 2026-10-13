@@ -1,12 +1,16 @@
-# YouTube Max
+<p align="center"><img src="icons/icon128.png" width="96" height="96" alt=""></p>
 
-A Chrome extension that expands the YouTube player to fill your entire browser window — without going OS fullscreen. Your browser tabs and address bar stay visible, making it perfect for multitasking while watching.
+# Windowed Fullscreen for YouTube
 
-Snap the browser window to one half of your screen, put YouTube Max on the right and your notes or docs on the left — watch and work at the same time.
+A Chrome extension that expands the YouTube player to fill your entire browser window, without going OS fullscreen. Your browser tabs and address bar stay visible, so you can keep working while you watch.
 
-![YouTube Max Demo](https://img.shields.io/badge/Chrome-Extension-green?logo=googlechrome)
+Snap the browser window to one half of your screen with YouTube on the right and your notes or docs on the left.
+
+[한국어](README.kr.md)
+
 ![Manifest V3](https://img.shields.io/badge/Manifest-V3-blue)
-![Version](https://img.shields.io/badge/version-1.2.1-orange)
+![Version](https://img.shields.io/badge/version-1.3.0-orange)
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
 ---
 
@@ -27,14 +31,14 @@ Snap the browser window to one half of your screen, put YouTube Max on the right
 
 1. Download or clone this repository
    ```
-   git clone https://github.com/Nova-47/yotube_max.git
+   git clone https://github.com/Nova-47/windowed-fullscreen-for-youtube.git
    ```
 
 2. Open Chrome and go to `chrome://extensions`
 
 3. Enable **Developer mode** (toggle in the top-right corner)
 
-4. Click **Load unpacked** and select the `yotube_max` folder
+4. Click **Load unpacked** and select the `windowed-fullscreen-for-youtube` folder
 
 5. Navigate to any YouTube video and press `W`
 
@@ -56,7 +60,7 @@ Snap the browser window to one half of your screen, put YouTube Max on the right
 
 ## How It Works
 
-YouTube Max injects CSS that:
+The extension injects CSS that:
 - Hides the header, sidebar, and video metadata
 - Pins `ytd-player` to `position: fixed; inset: 0` filling the full viewport
 - Scopes all changes under a single HTML class, making toggle instant and clean
@@ -68,7 +72,7 @@ The `W` key is intercepted at `document_start` in the page's main world, before 
 ## File Structure
 
 ```
-yotube_max/
+windowed-fullscreen-for-youtube/
 ├── manifest.json        # Manifest V3
 ├── key_interceptor.js   # Keyboard hook (document_start, MAIN world)
 ├── content.js           # CSS injection + player button + toggle logic
@@ -77,6 +81,7 @@ yotube_max/
 ├── popup.html           # Extension popup UI
 ├── popup.js             # Popup logic
 └── icons/
+    ├── icon.svg         # Icon source
     ├── icon16.png
     ├── icon48.png
     └── icon128.png
@@ -85,6 +90,10 @@ yotube_max/
 ---
 
 ## Changelog
+
+### v1.3.0
+- Renamed from "YouTube Max" to "Windowed Fullscreen for YouTube", with a new icon
+- Removed the `tabs` and `activeTab` permissions: the popup and `Alt+W` now ask the page's content script instead of reading the tab URL, so installing no longer shows a "Read your browsing history" warning
 
 ### v1.2.1
 - Fix: `W` shortcut did nothing while a non-Latin input mode (e.g. Korean IME) was active — keys are now matched by physical key (`e.code`)
@@ -109,6 +118,14 @@ yotube_max/
 
 ---
 
+## Privacy
+
+This extension collects no data and makes no network requests. The only thing it stores is whether windowed fullscreen is on, in `chrome.storage.local` on your own machine. See [PRIVACY.md](PRIVACY.md).
+
+Permissions: `storage` only (to remember the on/off state). It runs on `www.youtube.com` pages only.
+
+---
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first.
@@ -116,3 +133,5 @@ Pull requests are welcome. For major changes, please open an issue first.
 ## License
 
 [MIT](LICENSE)
+
+This project is not affiliated with, endorsed by, or sponsored by YouTube or Google LLC. YouTube is a trademark of Google LLC.

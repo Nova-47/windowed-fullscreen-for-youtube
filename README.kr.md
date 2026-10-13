@@ -1,13 +1,17 @@
-# YouTube Max
+<p align="center"><img src="icons/icon128.png" width="96" height="96" alt=""></p>
+
+# Windowed Fullscreen for YouTube
 
 YouTube 플레이어를 브라우저 창 전체에 꽉 차게 확장하는 크롬 익스텐션입니다.
-OS 전체화면(F키)과 달리 브라우저 탭과 주소창은 그대로 유지되어, 영상을 보면서 다른 작업을 병행하기에 최적입니다.
+OS 전체화면(F키)과 달리 브라우저 탭과 주소창은 그대로 유지되어, 영상을 보면서 다른 작업을 병행하기에 좋습니다.
 
 브라우저 창을 절반으로 나눠 오른쪽엔 YouTube 영상을, 왼쪽엔 메모 앱이나 문서를 띄워두는 식으로 활용할 수 있습니다.
 
-![YouTube Max Demo](https://img.shields.io/badge/Chrome-Extension-green?logo=googlechrome)
+[English](README.md)
+
 ![Manifest V3](https://img.shields.io/badge/Manifest-V3-blue)
-![Version](https://img.shields.io/badge/version-1.2.1-orange)
+![Version](https://img.shields.io/badge/version-1.3.0-orange)
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
 ---
 
@@ -28,14 +32,14 @@ OS 전체화면(F키)과 달리 브라우저 탭과 주소창은 그대로 유�
 
 1. 이 저장소를 다운로드하거나 클론합니다
    ```
-   git clone https://github.com/Nova-47/yotube_max.git
+   git clone https://github.com/Nova-47/windowed-fullscreen-for-youtube.git
    ```
 
 2. Chrome에서 `chrome://extensions` 로 이동합니다
 
 3. 우상단의 **개발자 모드** 를 활성화합니다
 
-4. **압축해제된 확장 프로그램을 로드합니다** 를 클릭하고 `yotube_max` 폴더를 선택합니다
+4. **압축해제된 확장 프로그램을 로드합니다** 를 클릭하고 `windowed-fullscreen-for-youtube` 폴더를 선택합니다
 
 5. YouTube 영상 페이지로 이동해서 `W` 를 누르면 됩니다
 
@@ -57,7 +61,7 @@ OS 전체화면(F키)과 달리 브라우저 탭과 주소창은 그대로 유�
 
 ## 동작 원리
 
-YouTube Max는 CSS를 주입하여 다음을 처리합니다.
+이 확장은 CSS를 주입하여 다음을 처리합니다.
 
 - 헤더, 사이드바, 영상 정보 영역을 숨김
 - `ytd-player` 요소에 `position: fixed; inset: 0` 을 적용해 뷰포트 전체를 점유
@@ -70,7 +74,7 @@ YouTube Max는 CSS를 주입하여 다음을 처리합니다.
 ## 파일 구조
 
 ```
-yotube_max/
+windowed-fullscreen-for-youtube/
 ├── manifest.json        # Manifest V3
 ├── key_interceptor.js   # 키보드 가로채기 (document_start, MAIN world)
 ├── content.js           # CSS 주입 + 플레이어 버튼 + 토글 로직
@@ -79,6 +83,7 @@ yotube_max/
 ├── popup.html           # 익스텐션 팝업 UI
 ├── popup.js             # 팝업 로직
 └── icons/
+    ├── icon.svg         # 아이콘 원본
     ├── icon16.png
     ├── icon48.png
     └── icon128.png
@@ -87,6 +92,10 @@ yotube_max/
 ---
 
 ## 변경 이력
+
+### v1.3.0
+- 이름 변경: "YouTube Max" → "Windowed Fullscreen for YouTube", 새 아이콘 적용
+- `tabs`, `activeTab` 권한 제거: 팝업과 `Alt+W`가 탭 URL을 읽는 대신 페이지의 콘텐츠 스크립트에 직접 물어봄. 설치 시 "방문 기록 읽기" 경고가 더 이상 표시되지 않음
 
 ### v1.2.1
 - 수정: 한글 입력 상태에서 `W` 단축키가 동작하지 않던 문제 해결 — 물리 키(`e.code`) 기준으로 판별
@@ -111,6 +120,14 @@ yotube_max/
 
 ---
 
+## 개인정보
+
+이 확장은 어떤 데이터도 수집하지 않고 외부로 통신하지 않습니다. 창 모드 전체화면의 on/off 상태 하나만 사용자 컴퓨터의 `chrome.storage.local`에 저장합니다. 자세한 내용은 [PRIVACY.md](PRIVACY.md)를 참고하세요.
+
+권한: `storage` 하나뿐입니다 (on/off 상태 기억용). `www.youtube.com` 페이지에서만 동작합니다.
+
+---
+
 ## 기여
 
 Pull Request는 언제든 환영합니다. 큰 변경 사항은 먼저 Issue를 열어 논의해 주세요.
@@ -118,3 +135,5 @@ Pull Request는 언제든 환영합니다. 큰 변경 사항은 먼저 Issue를 
 ## 라이선스
 
 [MIT](LICENSE)
+
+이 프로젝트는 YouTube 또는 Google LLC와 제휴, 보증, 후원 관계가 없습니다. YouTube는 Google LLC의 상표입니다.

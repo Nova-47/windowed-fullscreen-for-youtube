@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YouTube Max</title>
+  <title>Windowed Fullscreen for YouTube</title>
   <style>
     * {
       margin: 0;
@@ -26,7 +26,7 @@
       margin-bottom: 20px;
     }
 
-    header svg {
+    header img {
       width: 28px;
       height: 28px;
       flex-shrink: 0;
@@ -35,8 +35,8 @@
     header h1 {
       font-size: 16px;
       font-weight: 600;
-      color: #ff0000;
-      letter-spacing: 0.3px;
+      color: #f2f4f7;
+      letter-spacing: 0.2px;
     }
 
     .status-card {
@@ -89,7 +89,7 @@
     }
 
     .toggle input:checked + .slider {
-      background: #ff0000;
+      background: #3d82f0;
     }
 
     .toggle input:checked + .slider::before {
@@ -147,12 +147,8 @@
 </head>
 <body>
   <header>
-    <!-- YouTube-style play icon -->
-    <svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
-      <rect width="90" height="90" rx="18" fill="#FF0000"/>
-      <polygon points="35,25 65,45 35,65" fill="#fff"/>
-    </svg>
-    <h1>YouTube Max</h1>
+    <img src="icons/icon48.png" width="28" height="28" alt="" />
+    <h1>Windowed Fullscreen</h1>
   </header>
 
   <div id="main-controls">
