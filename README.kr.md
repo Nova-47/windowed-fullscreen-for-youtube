@@ -7,7 +7,7 @@ OS 전체화면(F키)과 달리 브라우저 탭과 주소창은 그대로 유�
 
 ![YouTube Max Demo](https://img.shields.io/badge/Chrome-Extension-green?logo=googlechrome)
 ![Manifest V3](https://img.shields.io/badge/Manifest-V3-blue)
-![Version](https://img.shields.io/badge/version-1.2.0-orange)
+![Version](https://img.shields.io/badge/version-1.2.1-orange)
 
 ---
 
@@ -28,14 +28,14 @@ OS 전체화면(F키)과 달리 브라우저 탭과 주소창은 그대로 유�
 
 1. 이 저장소를 다운로드하거나 클론합니다
    ```
-   git clone https://github.com/nova-47/youtube-max.git
+   git clone https://github.com/Nova-47/yotube_max.git
    ```
 
 2. Chrome에서 `chrome://extensions` 로 이동합니다
 
 3. 우상단의 **개발자 모드** 를 활성화합니다
 
-4. **압축해제된 확장 프로그램을 로드합니다** 를 클릭하고 `youtube-max` 폴더를 선택합니다
+4. **압축해제된 확장 프로그램을 로드합니다** 를 클릭하고 `yotube_max` 폴더를 선택합니다
 
 5. YouTube 영상 페이지로 이동해서 `W` 를 누르면 됩니다
 
@@ -70,7 +70,7 @@ YouTube Max는 CSS를 주입하여 다음을 처리합니다.
 ## 파일 구조
 
 ```
-youtube-max/
+yotube_max/
 ├── manifest.json        # Manifest V3
 ├── key_interceptor.js   # 키보드 가로채기 (document_start, MAIN world)
 ├── content.js           # CSS 주입 + 플레이어 버튼 + 토글 로직
@@ -87,6 +87,11 @@ youtube-max/
 ---
 
 ## 변경 이력
+
+### v1.2.1
+- 수정: 한글 입력 상태에서 `W` 단축키가 동작하지 않던 문제 해결 — 물리 키(`e.code`) 기준으로 판별
+- 수정: 탭이 백그라운드일 때 토글하면 이후 토글이 영구히 먹통이 되던 문제 해결
+- 내부: 숨김 대상 UI 셀렉터 목록을 한 곳으로 통합
 
 ### v1.2.0
 - 기능: 토글 시 부드러운 애니메이션 적용 — 플레이어가 원래 위치에서 전체화면으로 확장 (300ms, Material Design easing), UI 요소 동시 fade out

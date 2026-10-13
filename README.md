@@ -6,7 +6,7 @@ Snap the browser window to one half of your screen, put YouTube Max on the right
 
 ![YouTube Max Demo](https://img.shields.io/badge/Chrome-Extension-green?logo=googlechrome)
 ![Manifest V3](https://img.shields.io/badge/Manifest-V3-blue)
-![Version](https://img.shields.io/badge/version-1.2.0-orange)
+![Version](https://img.shields.io/badge/version-1.2.1-orange)
 
 ---
 
@@ -27,14 +27,14 @@ Snap the browser window to one half of your screen, put YouTube Max on the right
 
 1. Download or clone this repository
    ```
-   git clone https://github.com/nova-47/youtube-max.git
+   git clone https://github.com/Nova-47/yotube_max.git
    ```
 
 2. Open Chrome and go to `chrome://extensions`
 
 3. Enable **Developer mode** (toggle in the top-right corner)
 
-4. Click **Load unpacked** and select the `youtube-max` folder
+4. Click **Load unpacked** and select the `yotube_max` folder
 
 5. Navigate to any YouTube video and press `W`
 
@@ -68,7 +68,7 @@ The `W` key is intercepted at `document_start` in the page's main world, before 
 ## File Structure
 
 ```
-youtube-max/
+yotube_max/
 ├── manifest.json        # Manifest V3
 ├── key_interceptor.js   # Keyboard hook (document_start, MAIN world)
 ├── content.js           # CSS injection + player button + toggle logic
@@ -85,6 +85,11 @@ youtube-max/
 ---
 
 ## Changelog
+
+### v1.2.1
+- Fix: `W` shortcut did nothing while a non-Latin input mode (e.g. Korean IME) was active — keys are now matched by physical key (`e.code`)
+- Fix: toggling could get permanently stuck if triggered while the tab was hidden
+- Internal: the hidden-UI selector list now lives in one place
 
 ### v1.2.0
 - Feature: Smooth animations on toggle — player expands from its natural position to fullscreen (300ms, Material Design easing), UI elements fade out simultaneously

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "YouTube Max",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Watch YouTube videos in windowed fullscreen mode — expands the player to fill the entire browser window.",
   "permissions": ["storage", "activeTab", "tabs"],
   "content_scripts": [
