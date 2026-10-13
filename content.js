@@ -152,7 +152,7 @@
     } else if (retries > 0) {
       setTimeout(() => tryInjectButton(retries - 1, interval), interval);
     } else {
-      console.warn('[YouTube Max] Could not find .ytp-fullscreen-button after retries. Button not injected.');
+      console.warn('[Windowed Fullscreen] Could not find .ytp-fullscreen-button after retries. Button not injected.');
     }
   }
 
@@ -288,6 +288,7 @@
   }
 
   function toggle() {
+    if (!enabled && !location.pathname.startsWith('/watch')) return;
     enabled ? disable() : enable();
   }
 
@@ -297,7 +298,7 @@
   function safeCall(fn) {
     try { fn(); } catch (e) {
       if (e.message?.includes('Extension context invalidated')) return;
-      console.error('[YouTube Max] chrome API error:', e);
+      console.error('[Windowed Fullscreen] chrome API error:', e);
       throw e;
     }
   }
@@ -314,7 +315,8 @@
   });
 
   // Alt+W global shortcut (background.js) + explicit enable/disable from popup
-  safeCall(() => chrome.runtime.onMessage.addListener((msg) => {
+  safeCall(() => chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+    if (msg.action === 'status')  sendResponse({ onWatch: location.pathname.startsWith('/watch') });
     if (msg.action === 'toggle')  toggle();
     if (msg.action === 'enable')  enable();   // animated
     if (msg.action === 'disable') disable();  // animated

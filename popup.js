@@ -5,11 +5,23 @@ async function getCurrentTab() {
   return tab;
 }
 
+// Ask the content script whether this tab is a watch page. Without the `tabs`
+// permission tab.url is unavailable; a rejected message means no content
+// script, i.e. not YouTube.
+async function isWatchPage(tab) {
+  if (!tab) return false;
+  try {
+    const res = await chrome.tabs.sendMessage(tab.id, { action: 'status' });
+    return !!res?.onWatch;
+  } catch {
+    return false;
+  }
+}
+
 async function init() {
   const tab = await getCurrentTab();
-  const isYouTubeWatch = tab?.url?.includes('youtube.com/watch');
 
-  if (!isYouTubeWatch) {
+  if (!(await isWatchPage(tab))) {
     document.getElementById('main-controls').style.display = 'none';
     document.getElementById('not-youtube').style.display = 'block';
     return;
