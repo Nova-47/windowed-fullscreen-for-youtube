@@ -244,6 +244,9 @@
   // After the transition, stable display:none CSS is swapped in (no visual change).
   function enable() {
     if (enabled || transitioning) return;
+    // rAF never fires in a hidden tab, which would leave `transitioning` stuck
+    // forever (W/Alt+W then silently do nothing) — skip the animation there.
+    if (document.hidden) { enableNow(); return; }
     transitioning = true;
 
     const player = document.querySelector('#movie_player');
@@ -279,6 +282,7 @@
   // instantly at peak opacity, then the overlay fades back out. Fast (×2 × 150ms).
   function disable() {
     if (!enabled || transitioning) return;
+    if (document.hidden) { disableNow(); return; }
     transitioning = true;
 
     const FADE = Math.round(ANIM_MS * 0.5); // 150 ms

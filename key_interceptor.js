@@ -9,7 +9,7 @@ document.addEventListener('keydown', (e) => {
   const isWindowed = document.documentElement.classList.contains('yt-max-windowed-fullscreen');
 
   // W key: toggle windowed fullscreen
-  if (e.key === 'w') {
+  if (e.code === 'KeyW') { // e.code: layout/IME-independent (e.key is 'ㅈ' in Korean mode)
     if (document.fullscreenElement) return;
     e.stopImmediatePropagation();
     e.preventDefault();
@@ -19,7 +19,7 @@ document.addEventListener('keydown', (e) => {
 
   // F key: if windowed FS is active, disable it first — synchronously, before
   // YouTube's handler runs — so native fullscreen starts from a clean state.
-  if (e.key === 'f' && isWindowed) {
+  if (e.code === 'KeyF' && isWindowed) {
     window.dispatchEvent(new CustomEvent('ytmax:disable'));
     // Do NOT stop propagation — let YouTube's F handler proceed normally.
   }
